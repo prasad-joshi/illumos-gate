@@ -12467,7 +12467,7 @@ nfs4_create_getsecattr_return(vsecattr_t *filled_vsap, vsecattr_t *vsap,
 		 * If the caller only asked for the ace count (VSA_ACECNT)
 		 * don't give them the full acl (VSA_ACE), free it.
 		 */
-		if (!orig_mask & VSA_ACE) {
+		if (!(orig_mask & VSA_ACE)) {
 			if (vsap->vsa_aclentp != NULL) {
 				kmem_free(vsap->vsa_aclentp,
 				    vsap->vsa_aclcnt * sizeof (ace_t));
@@ -12489,7 +12489,7 @@ nfs4_create_getsecattr_return(vsecattr_t *filled_vsap, vsecattr_t *vsap,
 		 * and/or the default acl count (VSA_DFACLCNT) don't give them
 		 * the acl (VSA_ACL) or default acl (VSA_DFACL), free it.
 		 */
-		if (!orig_mask & VSA_ACL) {
+		if (!(orig_mask & VSA_ACL)) {
 			if (vsap->vsa_aclentp != NULL) {
 				kmem_free(vsap->vsa_aclentp,
 				    vsap->vsa_aclcnt * sizeof (aclent_t));
@@ -12497,7 +12497,7 @@ nfs4_create_getsecattr_return(vsecattr_t *filled_vsap, vsecattr_t *vsap,
 			}
 		}
 
-		if (!orig_mask & VSA_DFACL) {
+		if (!(orig_mask & VSA_DFACL)) {
 			if (vsap->vsa_dfaclentp != NULL) {
 				kmem_free(vsap->vsa_dfaclentp,
 				    vsap->vsa_dfaclcnt * sizeof (aclent_t));

@@ -3443,7 +3443,7 @@ e1000_poll (struct nic *nic, int retrieve)
 	struct e1000_rx_desc *rd;
 
 	rd = rx_base + rx_last;
-	if (!rd->status & E1000_RXD_STAT_DD)
+	if (!(rd->status & E1000_RXD_STAT_DD))
 		return 0;
 
 	if ( ! retrieve ) return 1;

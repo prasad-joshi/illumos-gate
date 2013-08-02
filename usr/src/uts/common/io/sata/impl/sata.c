@@ -12958,7 +12958,7 @@ sata_check_capacity(sata_drive_info_t *sdinfo)
 	int i;
 
 	if (sdinfo->satadrv_type != SATA_DTYPE_ATADISK ||
-	    !sdinfo->satadrv_id.ai_cap & SATA_LBA_SUPPORT)
+	    !(sdinfo->satadrv_id.ai_cap & SATA_LBA_SUPPORT))
 		/* Capacity valid only for LBA-addressable disk devices */
 		return (0);
 
