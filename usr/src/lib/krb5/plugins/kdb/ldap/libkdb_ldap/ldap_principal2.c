@@ -995,7 +995,7 @@ krb5_ldap_put_principal(context, entries, nentries, db_args)
 		    continue;
 
 		/* Solaris Kerberos: fix key history issue */
-		if (ptr->tl_data_type == KRB5_TL_KADM_DATA && ! entries->mask & KADM5_KEY_HIST)
+		if (ptr->tl_data_type == KRB5_TL_KADM_DATA && !(entries->mask & KADM5_KEY_HIST))
 		    continue;
 		    
 		count++;
@@ -1022,7 +1022,7 @@ krb5_ldap_put_principal(context, entries, nentries, db_args)
 		     * Solaris Kerberos: key history needs to be stored (it's in
 		     * the KRB5_TL_KADM_DATA).
 		     */
-		    if (ptr->tl_data_type == KRB5_TL_KADM_DATA && ! entries->mask & KADM5_KEY_HIST)
+		    if (ptr->tl_data_type == KRB5_TL_KADM_DATA && !(entries->mask & KADM5_KEY_HIST))
 			continue;
 
 		    if ((st = tl_data2berval (ptr, &ber_tl_data[j])) != 0)

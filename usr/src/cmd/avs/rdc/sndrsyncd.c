@@ -1017,7 +1017,7 @@ cleanup_hostlist(rdc_status_t *rdc_info)
 	for (i = 0; i < host_list->numhosts; i++) {
 		int found = 0;
 		for (j = 0; (j < rdc_maxsets) && !found; j++) {
-			if (!rdc_info->rdc_set[j].flags & RDC_ENABLED)
+			if (!(rdc_info->rdc_set[j].flags & RDC_ENABLED))
 				continue;
 			if ((!host_list->configured[i]) ||
 			    (host_list->hosts[i] == '\0')) {

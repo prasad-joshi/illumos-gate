@@ -1111,7 +1111,7 @@ soft_derive_enforce_flags(soft_object_t *basekey, soft_object_t *newkey)
 	}
 
 	/* Derive the CKA_ALWAYS_SENSITIVE flag */
-	if (!basekey->bool_attr_mask & ALWAYS_SENSITIVE_BOOL_ON) {
+	if (!(basekey->bool_attr_mask & ALWAYS_SENSITIVE_BOOL_ON)) {
 		/*
 		 * If the base key has its CKA_ALWAYS_SENSITIVE set to
 		 * FALSE, then the derived key will as well.
@@ -1131,7 +1131,7 @@ soft_derive_enforce_flags(soft_object_t *basekey, soft_object_t *newkey)
 	}
 
 	/* Derive the CKA_NEVER_EXTRACTABLE flag */
-	if (!basekey->bool_attr_mask & NEVER_EXTRACTABLE_BOOL_ON) {
+	if (!(basekey->bool_attr_mask & NEVER_EXTRACTABLE_BOOL_ON)) {
 		/*
 		 * If the base key has its CKA_NEVER_EXTRACTABLE set to
 		 * FALSE, then the derived key will as well.

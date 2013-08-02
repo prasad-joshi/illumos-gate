@@ -7219,7 +7219,7 @@ fcip_timeout(void *arg)
 			fptr->fcip_flags |= FCIP_LINK_DOWN;
 		}
 	}
-	if (!fptr->fcip_flags & FCIP_RTE_REMOVING) {
+	if (!(fptr->fcip_flags & FCIP_RTE_REMOVING)) {
 		dispatch_rte_removal = 1;
 	}
 	mutex_exit(&fptr->fcip_mutex);

@@ -1763,7 +1763,7 @@ main(int argc, char **argv)
 				md_exit(local_sp, 1);
 			}
 			/* Set is owned - is it stale? */
-			if (!set_info[setno] & SET_INFO_NO_WR) {
+			if (!(set_info[setno] & SET_INFO_NO_WR)) {
 				(void) memset(&cfg, 0, sizeof (cfg));
 				cfg.c_id = 0;
 				cfg.c_setno = sp->setno;

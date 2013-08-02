@@ -3628,7 +3628,7 @@ rdc_sync(rdc_config_t *uparms, spcs_s_info_t kstatus)
 	 */
 	if (krdc->aux_state & RDC_AUXSYNCIP) {
 #ifdef DEBUG
-		if (!rdc_get_vflags(urdc) & RDC_SYNCING) {
+		if (!(rdc_get_vflags(urdc) & RDC_SYNCING)) {
 			cmn_err(CE_WARN, "!rdc_sync: "
 			    "RDC_AUXSYNCIP set, SYNCING off");
 		}
