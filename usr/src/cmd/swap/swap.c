@@ -362,6 +362,24 @@ doswap(int flag)
 	return (0);
 }
 
+/*
+ * convert /dev/zvol/dsk/<pool>/<vol> to <pool>/<vol>. It should clearly
+ * indicate swap device is a ZFS volume. Do nothing for rest of the
+ * swap devices.
+ */
+static char *
+printable_name(char *path)
+{
+	int  len = strlen(ZVOL_FULL_DEV_DIR);
+
+	if (strncmp(path, ZVOL_FULL_DEV_DIR, len) != 0) {
+		/* not a ZVOL */
+		return (path);	
+	}
+
+	return (path + len);
+}
+
 static int
 list(int flag)
 {
@@ -371,6 +389,7 @@ list(int flag)
 	struct stat64 statbuf;
 	char		*path;
 	char		fullpath[MAXPATHLEN+1];
+	char		*dispath;
 	int		num;
 	numbuf_t numbuf;
 	unsigned long long scale = 1024L;
@@ -424,8 +443,10 @@ list(int flag)
 	 * translations (if any) of the swap.1M man page keywords for
 	 * -l option:  "swapfile", "dev", "swaplo", "blocks", "free"
 	 */
+
 	(void) printf(
-	    gettext("swapfile             dev    swaplo   blocks     free\n"));
+		gettext("%-20s %5s   %8s %12s %12s\n"), "swapfile", "dev", "swaplo",
+		((flag & KFLAG) || (flag & HFLAG)) ? "size" : "blocks", "free");
 
 	swapent = st->swt_ent;
 	for (i = 0; i < num; i++, swapent++) {
@@ -435,22 +456,25 @@ list(int flag)
 		else
 			(void) snprintf(fullpath, sizeof (fullpath),
 				"%s", swapent->ste_path);
+
+		dispath = printable_name(fullpath);
+
 		if (stat64(fullpath, &statbuf) < 0)
 			if (*swapent->ste_path != '/')
-				(void) printf(gettext("%-20s  -  "),
-					swapent->ste_path);
+				(void) printf(gettext("%-20s %4c   "),
+					swapent->ste_path, '-');
 			else
-				(void) printf(gettext("%-20s ?,? "),
-					fullpath);
+				(void) printf(gettext("%-20s %5s   "),
+					dispath, "?,?");
 		else {
 			if (S_ISBLK(statbuf.st_mode) ||
 			    S_ISCHR(statbuf.st_mode)) {
-				(void) printf(gettext("%-19s %2lu,%-2lu"),
-				    fullpath,
+				(void) printf(gettext("%-20s %3lu,%-3lu"),
+				    dispath,
 				    major(statbuf.st_rdev),
 				    minor(statbuf.st_rdev));
 			} else {
-				(void) printf(gettext("%-20s  -  "), fullpath);
+				(void) printf(gettext("%-20s %4c   "), dispath, '-');
 			}
 		}
 		{
@@ -461,25 +485,25 @@ list(int flag)
 					number_to_scaled_string(numbuf,
 					swapent->ste_start, DEV_BSIZE,
 					scale));
-			(void) printf(gettext(" %8s"),
+			(void) printf(gettext(" %12s"),
 					number_to_scaled_string(numbuf,
 					swapent->ste_pages *
 						diskblks_per_page,
 					DEV_BSIZE, scale));
-			(void) printf(gettext(" %8s"),
+			(void) printf(gettext(" %12s"),
 					number_to_scaled_string(numbuf,
 					swapent->ste_free *
 						diskblks_per_page,
 					DEV_BSIZE, scale));
 		} else if (flag & KFLAG) {
-			(void) printf(gettext(" %7luK %7luK %7luK"),
+			(void) printf(gettext(" %7luK %11luK %11luK"),
 					swapent->ste_start * DEV_BSIZE / 1024,
 					swapent->ste_pages * diskblks_per_page *
 						DEV_BSIZE / 1024,
 					swapent->ste_free * diskblks_per_page *
 						DEV_BSIZE / 1024);
 		} else {
-			(void) printf(gettext(" %8lu %8lu %8lu"),
+			(void) printf(gettext(" %8lu %12lu %12lu"),
 					swapent->ste_start,
 					swapent->ste_pages * diskblks_per_page,
 					swapent->ste_free * diskblks_per_page);
