@@ -362,6 +362,24 @@ doswap(int flag)
 	return (0);
 }
 
+/*
+ * convert /dev/zvol/dsk/<pool>/<vol> to <pool>/<vol>. It should clearly
+ * indicate swap device is a ZFS volume. Do nothing for rest of the
+ * swap devices.
+ */
+static char *
+printable_name(char *path)
+{
+	int  len = strlen(ZVOL_FULL_DEV_DIR);
+
+	if (strncmp(path, ZVOL_FULL_DEV_DIR, len) != 0) {
+		/* not a ZVOL */
+		return (path);	
+	}
+
+	return (path + len);
+}
+
 static int
 list(int flag)
 {
@@ -371,6 +389,7 @@ list(int flag)
 	struct stat64 statbuf;
 	char		*path;
 	char		fullpath[MAXPATHLEN+1];
+	char		*dispath;
 	int		num;
 	numbuf_t numbuf;
 	unsigned long long scale = 1024L;
@@ -435,22 +454,25 @@ list(int flag)
 		else
 			(void) snprintf(fullpath, sizeof (fullpath),
 				"%s", swapent->ste_path);
+
+		dispath = printable_name(fullpath);
+
 		if (stat64(fullpath, &statbuf) < 0)
 			if (*swapent->ste_path != '/')
 				(void) printf(gettext("%-20s  -  "),
 					swapent->ste_path);
 			else
 				(void) printf(gettext("%-20s ?,? "),
-					fullpath);
+					dispath);
 		else {
 			if (S_ISBLK(statbuf.st_mode) ||
 			    S_ISCHR(statbuf.st_mode)) {
 				(void) printf(gettext("%-19s %2lu,%-2lu"),
-				    fullpath,
+				    dispath,
 				    major(statbuf.st_rdev),
 				    minor(statbuf.st_rdev));
 			} else {
-				(void) printf(gettext("%-20s  -  "), fullpath);
+				(void) printf(gettext("%-20s  -  "), dispath);
 			}
 		}
 		{
